@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  chat-app-postgres:
+    image: postgres:16.1
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    environment:
+      POSTGRES_USER: '${POSTGRES_USER:-user}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-password}'
+      POSTGRES_DB: '${POSTGRES_DB:-chat-app}'
+    volumes:
+      - ./chat-app-api-db:/var/lib/postgresql/chat-app
+
+  chat-app-redis:
+    image: redis:7.2.3
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    command: >
+      --requirepass '${REDIS_PASSWORD:-redispass}'
+    restart: unless-stopped
+
+volumes:
+  chat-app-api-db:
