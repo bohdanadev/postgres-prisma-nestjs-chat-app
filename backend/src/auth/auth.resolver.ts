@@ -4,7 +4,10 @@ import { LoginResponse, RegisterResponse } from './types';
 import { LoginDto, RegisterDto } from './dto';
 import { BadRequestException, UseFilters } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { GraphQLErrorFilter } from '../filters/custom-exception.filter';
 
+
+@UseFilters(GraphQLErrorFilter)
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}

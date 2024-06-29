@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as path from 'node:path';
+import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
@@ -15,6 +17,7 @@ const pubSub = new RedisPubSub({
   connection: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    password: process.env.REDIS_PASSWORD,
     retryStrategy: (times) => {
       return Math.min(times * 50, 2000);
     },
@@ -26,6 +29,10 @@ const pubSub = new RedisPubSub({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/',
     }),
     AuthModule,
     UserModule,

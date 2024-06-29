@@ -96,10 +96,10 @@ export class AuthService {
     if (existingUser) {
       throw new BadRequestException({ email: 'Email already in use' });
     }
-    const saltOrRounds = this.configService.get<number>('SALT_OR_ROUNDS');
+    const saltOrRounds = this.configService.get<string>('SALT_OR_ROUNDS');
     const hashedPassword = await bcrypt.hash(
       registerDto.password,
-      saltOrRounds,
+      +saltOrRounds,
     );
     const user = await this.prisma.user.create({
       data: {
