@@ -21,6 +21,7 @@ import {
 import { useMutation } from "@apollo/client"
 import { LOGOUT_USER } from "../graphql/mutations/Logout"
 
+
 const useStyles = createStyles((theme) => {
   return {
     link: {
@@ -32,13 +33,11 @@ const useStyles = createStyles((theme) => {
       justifyContent: "center",
       color: 
         theme.colors.dark
-       // theme.colorScheme === "dark"
           ? theme.colors.dark[0]
           : theme.colors.gray[7],
 
       "&:hover": {
         backgroundColor:
-          //theme.colorScheme === "dark"
           theme.colors.dark
             ? theme.colors.dark[5]
             : theme.colors.gray[0],
@@ -127,18 +126,18 @@ function Sidebar() {
       collapsed: { mobile: !open },
     }}>
   
-    <AppShell.Navbar pos="fixed" zIndex={100} w={rem(100)} p={"md"}>
-      <Center>
-        <IconBrandMessenger type="mark" size={30} />
-      </Center>
-      <AppShell.Section grow mt={50}>
-        <Stack justify="center">
-          {userId && links}
-        </Stack>
-      </AppShell.Section>
-      <AppShell.Section>
-        <Stack justify="center">
-          {userId && (
+     <AppShell.Navbar w={rem(100)} p={"md"} bg={"orange"}>
+       <Center>
+         <IconBrandMessenger type="mark" size={30} />
+       </Center>
+       <AppShell.Section grow mt={50} bg={"red"}>
+         <Stack justify="center">
+           {userId && links}
+         </Stack>
+       </AppShell.Section>
+       <AppShell.Section>
+         <Stack justify="center">
+           {userId && (
             <NavbarLink
               icon={IconUser}
               label={"Profile(" + user.fullname + ")"}

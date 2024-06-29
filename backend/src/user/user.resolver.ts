@@ -35,4 +35,19 @@ export class UserResolver {
     readStream.pipe(createWriteStream(imagePath));
     return imageUrl;
   }
+
+  @UseGuards(GraphqlAuthGuard)
+  @Query(() => [User])
+  async searchUsers(
+    @Args('fullname') fullname: string,
+    @Context() context: { req: Request },
+  ) {
+    return this.userService.searchUsers(fullname, context.req.user.sub);
+  }
+
+  @UseGuards(GraphqlAuthGuard)
+  @Query(() => [User])
+  getUsersOfChatroom(@Args('chatroomId') chatroomId: number) {
+    return this.userService.getUsersOfChatroom(chatroomId);
+  }
 }

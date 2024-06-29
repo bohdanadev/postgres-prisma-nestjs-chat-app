@@ -12,6 +12,7 @@ import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TokenService } from './token/token.service';
+import { ChatroomModule } from './chatroom/chatroom.module';
 
 const pubSub = new RedisPubSub({
   connection: {
@@ -74,6 +75,7 @@ const pubSub = new RedisPubSub({
         };
       },
     }),
+    ChatroomModule,
   ],
   controllers: [AppController],
   providers: [AppService, TokenService],
