@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
   Stepper,
   Button,
@@ -6,45 +6,39 @@ import {
   Modal,
   TextInput,
   MultiSelect,
-} from "@mantine/core"
-import { useGeneralStore } from "../stores/generalStore"
-import { CREATE_CHATROOM } from "../graphql/mutations/CreateChatroom"
-import {
-  Mutation,
-  Chatroom,
-  Query,
-  User,
-} from "../gql/graphql"
-import { useMutation, useQuery } from "@apollo/client"
-import { useForm } from "@mantine/form"
-import { IconPlus } from "@tabler/icons-react"
-import { SEARCH_USERS } from "../graphql/queries/SearchUsers"
-import { ADD_USERS_TO_CHATROOM } from "../graphql/mutations/AddUsersToChatroom"
+} from "@mantine/core";
+import { useGeneralStore } from "../stores/generalStore";
+import { CREATE_CHATROOM } from "../graphql/mutations/CreateChatroom";
+import { Mutation, Chatroom, Query, User } from "../gql/graphql";
+import { useMutation, useQuery } from "@apollo/client";
+import { useForm } from "@mantine/form";
+import { IconPlus } from "@tabler/icons-react";
+import { SEARCH_USERS } from "../graphql/queries/SearchUsers";
+import { ADD_USERS_TO_CHATROOM } from "../graphql/mutations/AddUsersToChatroom";
 
 function AddChatroom() {
-  const [active, setActive] = useState(1)
-  const [highestStepVisited, setHighestStepVisited] = useState(active)
+  const [active, setActive] = useState(1);
+  const [highestStepVisited, setHighestStepVisited] = useState(active);
 
   const isCreateRoomModalOpen = useGeneralStore(
     (state) => state.isCreateRoomModalOpen
-  )
+  );
   const toggleCreateRoomModal = useGeneralStore(
     (state) => state.toggleCreateRoomModal
-  )
+  );
 
   const handleStepChange = (nextStep: number) => {
-    const isOutOfBounds = nextStep > 2 || nextStep < 0
+    const isOutOfBounds = nextStep > 2 || nextStep < 0;
 
     if (isOutOfBounds) {
-      return
+      return;
     }
 
-    setActive(nextStep)
-    setHighestStepVisited((hSC) => Math.max(hSC, nextStep))
-  }
+    setActive(nextStep);
+    setHighestStepVisited((hSC) => Math.max(hSC, nextStep));
+  };
 
-  const [createChatroom, { loading }] =
-    useMutation<Mutation>(CREATE_CHATROOM)
+  const [createChatroom, { loading }] = useMutation<Mutation>(CREATE_CHATROOM);
 
   const form = useForm({
     initialValues: {
@@ -54,9 +48,9 @@ function AddChatroom() {
       name: (value: string) =>
         value.trim().length >= 3 ? null : "Name must be at least 3 characters",
     },
-  })
+  });
   const [newlyCreatedChatroom, setNewlyCreatedChatroom] =
-    useState<Chatroom | null>(null)
+    useState<Chatroom | null>(null);
 
   const handleCreateChatroom = async () => {
     await createChatroom({
@@ -64,28 +58,28 @@ function AddChatroom() {
         name: form.values.name,
       },
       onCompleted: (data) => {
-        console.log(data)
-        setNewlyCreatedChatroom(data.createChatroom)
-        handleStepChange(active + 1)
+        console.log(data);
+        setNewlyCreatedChatroom(data.createChatroom);
+        handleStepChange(active + 1);
       },
       onError: (error) => {
         form.setErrors({
           name: error.graphQLErrors[0].extensions?.name as string,
-        })
+        });
       },
       refetchQueries: ["GetChatroomsForUser"],
-    })
-  }
-  const [searchTerm, setSearchTerm] = useState("")
+    });
+  };
+  const [searchTerm, setSearchTerm] = useState("");
   const { data, refetch } = useQuery<Query>(SEARCH_USERS, {
     variables: { fullname: searchTerm },
-  })
+  });
   const [addUsersToChatroom, { loading: loadingAddUsers }] =
     useMutation<Mutation>(ADD_USERS_TO_CHATROOM, {
       refetchQueries: ["GetChatroomsForUser"],
-    })
+    });
 
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const handleAddUsersToChatroom = async () => {
     await addUsersToChatroom({
       variables: {
@@ -94,38 +88,38 @@ function AddChatroom() {
         userIds: selectedUsers.map((userId) => parseInt(userId)),
       },
       onCompleted: () => {
-        handleStepChange(1)
-        toggleCreateRoomModal()
-        setSelectedUsers([])
-        setNewlyCreatedChatroom(null)
-        form.reset()
+        handleStepChange(1);
+        toggleCreateRoomModal();
+        setSelectedUsers([]);
+        setNewlyCreatedChatroom(null);
+        form.reset();
       },
       onError: (error) => {
         form.setErrors({
           name: error.graphQLErrors[0].extensions?.name as string,
-        })
+        });
       },
-    })
-  }
-  let debounceTimeout: NodeJS.Timeout
+    });
+  };
+  let debounceTimeout: NodeJS.Timeout;
 
   const handleSearchChange = (term: string) => {
-    setSearchTerm(term)
-    clearTimeout(debounceTimeout)
+    setSearchTerm(term);
+    clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
-      refetch()
-    }, 300)
-  }
+      refetch();
+    }, 300);
+  };
 
   type SelectItem = {
-    label: string
-    value: string
-  }
+    label: string;
+    value: string;
+  };
   const selectItems: SelectItem[] =
     data?.searchUsers?.map((user) => ({
       label: user.fullname,
       value: String(user.id),
-    })) || []
+    })) || [];
 
   return (
     <Modal opened={isCreateRoomModalOpen} onClose={toggleCreateRoomModal}>
@@ -180,7 +174,7 @@ function AddChatroom() {
         )}
       </Group>
     </Modal>
-  )
+  );
 }
 
-export default AddChatroom
+export default AddChatroom;

@@ -43,3 +43,4 @@ lerna-debug.log*
 
 /chat-app-api-db
 *.png
+*.jpg

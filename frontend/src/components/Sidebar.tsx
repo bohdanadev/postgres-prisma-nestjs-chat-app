@@ -1,15 +1,15 @@
-import { useState } from "react"
-import { useGeneralStore } from "../stores/generalStore"
-import { useUserStore } from "../stores/userStore"
+import { useState } from "react";
+import { useGeneralStore } from "../stores/generalStore";
+import { useUserStore } from "../stores/userStore";
 import {
-  AppShell,
+  Navbar,
   Center,
   Tooltip,
   UnstyledButton,
+  createStyles,
   Stack,
   rem,
-} from "@mantine/core"
-import { createStyles } from '@mantine/emotion'
+} from "@mantine/core";
 
 import {
   IconUser,
@@ -17,10 +17,9 @@ import {
   IconBrandMessenger,
   IconBrandWechat,
   IconLogin,
-} from "@tabler/icons-react"
-import { useMutation } from "@apollo/client"
-import { LOGOUT_USER } from "../graphql/mutations/Logout"
-
+} from "@tabler/icons-react";
+import { useMutation } from "@apollo/client";
+import { LOGOUT_USER } from "../graphql/mutations/Logout";
 
 const useStyles = createStyles((theme) => {
   return {
@@ -31,41 +30,40 @@ const useStyles = createStyles((theme) => {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      color: 
-        theme.colors.dark
+      color:
+        theme.colorScheme === "dark"
           ? theme.colors.dark[0]
           : theme.colors.gray[7],
 
       "&:hover": {
         backgroundColor:
-          theme.colors.dark
+          theme.colorScheme === "dark"
             ? theme.colors.dark[5]
             : theme.colors.gray[0],
       },
     },
     active: {
       "&, &:hover": {
-        backgroundColor: theme.colors.pink
-      //  backgroundColor: theme.fn.variant({
-      //    variant: "light",
-       //   color: theme.primaryColor,
-      //  }).background,
-      //  color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-      //    .color,
+        backgroundColor: theme.fn.variant({
+          variant: "light",
+          color: theme.primaryColor,
+        }).background,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
+          .color,
       },
     },
-  }
-})
+  };
+});
 
 interface NavbarLinkProps {
-  icon: React.FC<any>
-  label: string
-  active?: boolean
-  onClick?(): void
+  icon: React.FC<any>;
+  label: string;
+  active?: boolean;
+  onClick?(): void;
 }
 
 function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
-  const { classes, cx } = useStyles()
+  const { classes, cx } = useStyles();
   return (
     <Tooltip
       label={label}
@@ -80,15 +78,15 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
         <Icon size="1.2rem" stroke={1.5} />
       </UnstyledButton>
     </Tooltip>
-  )
+  );
 }
-const mockdata = [{ icon: IconBrandWechat, label: "Chatrooms" }]
+const mockdata = [{ icon: IconBrandWechat, label: "Chatrooms" }];
 
 function Sidebar() {
   const toggleProfileSettingsModal = useGeneralStore(
     (state) => state.toggleProfileSettingsModal
-  )
-  const [active, setActive] = useState(0)
+  );
+  const [active, setActive] = useState(0);
 
   const links = mockdata.map((link, index) => (
     <NavbarLink
@@ -97,47 +95,41 @@ function Sidebar() {
       active={index === active}
       onClick={() => setActive(index)}
     />
-  ))
-  const userId = useUserStore((state) => state.id)
-  const user = useUserStore((state) => state)
-  const setUser = useUserStore((state) => state.setUser)
+  ));
+  const userId = useUserStore((state) => state.id);
+  const user = useUserStore((state) => state);
+  const setUser = useUserStore((state) => state.setUser);
 
-  const toggleLoginModal = useGeneralStore((state) => state.toggleLoginModal)
+  const toggleLoginModal = useGeneralStore((state) => state.toggleLoginModal);
   const [logoutUser] = useMutation(LOGOUT_USER, {
     onCompleted: () => {
-      toggleLoginModal()
+      toggleLoginModal();
     },
-  })
+  });
 
   const handleLogout = async () => {
-    await logoutUser()
+    await logoutUser();
     setUser({
       id: undefined,
       fullname: "",
       avatarUrl: null,
       email: "",
-    })
-  }
+    });
+  };
 
   return (
-    <AppShell navbar={{
-      width: 300,
-      breakpoint: 'sm',
-      collapsed: { mobile: !open },
-    }}>
-  
-     <AppShell.Navbar w={rem(100)} p={"md"} bg={"orange"}>
-       <Center>
-         <IconBrandMessenger type="mark" size={30} />
-       </Center>
-       <AppShell.Section grow mt={50} bg={"red"}>
-         <Stack justify="center">
-           {userId && links}
-         </Stack>
-       </AppShell.Section>
-       <AppShell.Section>
-         <Stack justify="center">
-           {userId && (
+    <Navbar fixed zIndex={100} w={rem(100)} p="md">
+      <Center>
+        <IconBrandMessenger type="mark" size={30} />
+      </Center>
+      <Navbar.Section grow mt={50}>
+        <Stack justify="center" spacing={0}>
+          {userId && links}
+        </Stack>
+      </Navbar.Section>
+      <Navbar.Section>
+        <Stack justify="center" spacing={0}>
+          {userId && (
             <NavbarLink
               icon={IconUser}
               label={"Profile(" + user.fullname + ")"}
@@ -159,10 +151,9 @@ function Sidebar() {
             />
           )}
         </Stack>
-      </AppShell.Section>
-    </AppShell.Navbar>
-    </AppShell>
-  )
+      </Navbar.Section>
+    </Navbar>
+  );
 }
 
-export default Sidebar
+export default Sidebar;

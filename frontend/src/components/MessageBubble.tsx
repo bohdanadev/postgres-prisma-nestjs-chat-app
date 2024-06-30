@@ -1,5 +1,5 @@
-import React from "react"
-import { Message } from "../gql/graphql"
+import React from "react";
+import { Message } from "../gql/graphql";
 import {
   Avatar,
   Flex,
@@ -7,17 +7,19 @@ import {
   Paper,
   Text,
   useMantineTheme,
-} from "@mantine/core"
+} from "@mantine/core";
 
 interface MessageProps {
-  message: Message
-  currentUserId: number
+  message: Message;
+  currentUserId: number;
 }
 
 const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
-  const theme = useMantineTheme()
-  if (!message?.user?.id) return null
-  const isSentByCurrentUser = message.user.id === currentUserId
+  const theme = useMantineTheme();
+  if (!message?.user?.id) return null;
+  const isSentByCurrentUser = message.user.id === currentUserId;
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   return (
     <Flex
@@ -57,7 +59,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
               width={"250"}
               height={"250"}
               fit="cover"
-              src={"http://localhost:3000/" + message.imageUrl}
+              src={`${apiUrl}${message.imageUrl}`}
               alt="Uploaded content"
             />
           )}
@@ -80,7 +82,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
         />
       )}
     </Flex>
-  )
-}
+  );
+};
 
-export default MessageBubble
+export default MessageBubble;

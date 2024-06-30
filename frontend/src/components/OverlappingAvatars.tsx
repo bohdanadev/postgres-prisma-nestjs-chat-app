@@ -1,11 +1,11 @@
-import React from "react"
-import { User } from "../gql/graphql"
-import { Avatar, Tooltip } from "@mantine/core"
+import React from "react";
+import { User } from "../gql/graphql";
+import { Avatar, Tooltip } from "@mantine/core";
 
 function OverlappingAvatars({ users }: { users: User[] }) {
-  const remainingUsers = users.length > 3 ? users.slice(3) : []
+  const remainingUsers = users.length > 3 ? users.slice(3) : [];
 
-  const remainingNames = remainingUsers.map((user) => user.fullname).join(", ")
+  const remainingNames = remainingUsers.map((user) => user.fullname).join(", ");
 
   return (
     <Tooltip.Group openDelay={300} closeDelay={100}>
@@ -21,7 +21,7 @@ function OverlappingAvatars({ users }: { users: User[] }) {
                   size="lg"
                 />
               </Tooltip>
-            )
+            );
           })}
 
           {users.length > 3 && (
@@ -32,7 +32,7 @@ function OverlappingAvatars({ users }: { users: User[] }) {
         </>
       </Avatar.Group>
     </Tooltip.Group>
-  )
+  );
 }
 
-export default OverlappingAvatars
+export default OverlappingAvatars;

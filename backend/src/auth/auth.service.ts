@@ -43,8 +43,6 @@ export class AuthService {
       throw new BadRequestException('User no longer exists');
     }
 
-    // const expiresIn = this.configService.get<number>('ACCESS_EXPIRES_IN');
-    // const expiration = Math.floor(Date.now() / 1000) + expiresIn;
     const accessToken = this.jwtService.sign(
       { ...payload },
       {
@@ -58,8 +56,6 @@ export class AuthService {
   }
   private async issueTokens(user: User, response: Response) {
     const payload = { username: user.fullname, sub: user.id };
-    //const expiresIn = this.configService.get<number>('ACCESS_EXPIRES_IN');
-    //const expiration = Math.floor(Date.now() / 1000) + expiresIn;
 
     const accessToken = this.jwtService.sign(
       { ...payload },

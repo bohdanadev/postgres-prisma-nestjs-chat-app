@@ -1,6 +1,5 @@
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 
@@ -22,27 +21,8 @@ async function bootstrap() {
     methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
   });
   app.use(cookieParser());
-  app.use(graphqlUploadExpress({ maxFileSize: 10000000000, maxFiles: 1 }));
+  app.use(graphqlUploadExpress({ maxFileSize: process.env.MAX_FILE_SIZE, maxFiles: process.env.MAX_FILES }));
 
-  const config = new DocumentBuilder()
-    .setTitle('Chat')
-    .setDescription('')
-    .setVersion('1.0.0')
-    .addBearerAuth({
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-      in: 'header',
-    })
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document, {
-    swaggerOptions: {
-      docExpansion: 'list',
-      defaultModelsExpandDepth: 2,
-      persistAuthorization: true,
-    },
-  });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -64,9 +44,6 @@ async function bootstrap() {
   await app.listen(parseInt(process.env.APP_PORT), process.env.APP_HOST, () => {
     console.log(
       `Server running on http://${process.env.APP_HOST}:${process.env.APP_PORT}`,
-    );
-    console.log(
-      `Swagger running on http://${process.env.APP_HOST}:${process.env.APP_PORT}/docs`,
     );
   });
 }

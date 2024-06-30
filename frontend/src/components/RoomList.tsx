@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 import {
   Button,
@@ -8,46 +8,43 @@ import {
   Group,
   Loader,
   ScrollArea,
-} from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
-import { IconPlus, IconX } from "@tabler/icons-react"
-import { useGeneralStore } from "../stores/generalStore"
-import { useUserStore } from "../stores/userStore"
-import { Link, useNavigate, useParams } from "react-router-dom"
-import { Chatroom, Query } from "../gql/graphql"
-import { GET_CHATROOMS_FOR_USER } from "../graphql/queries/GetChatroomsForUser"
-import { DELETE_CHATROOM } from "../graphql/mutations/DeleteChatroom"
-import { useMutation, useQuery } from "@apollo/client"
-import OverlappingAvatars from "./OverlappingAvatars"
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconPlus, IconX } from "@tabler/icons-react";
+import { useGeneralStore } from "../stores/generalStore";
+import { useUserStore } from "../stores/userStore";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Chatroom, Query } from "../gql/graphql";
+import { GET_CHATROOMS_FOR_USER } from "../graphql/queries/GetChatroomsForUser";
+import { DELETE_CHATROOM } from "../graphql/mutations/DeleteChatroom";
+import { useMutation, useQuery } from "@apollo/client";
+import OverlappingAvatars from "./OverlappingAvatars";
 function RoomList() {
   const toggleCreateRoomModal = useGeneralStore(
     (state) => state.toggleCreateRoomModal
-  )
-  const userId = useUserStore((state) => state.id)
+  );
+  const userId = useUserStore((state) => state.id);
 
-  const { data, loading, error } = useQuery<Query>(
-    GET_CHATROOMS_FOR_USER,
-    {
-      variables: {
-        userId: userId,
-      },
-    }
-  )
-  const isSmallDevice = useMediaQuery("(max-width: 768px)")
+  const { data, loading, error } = useQuery<Query>(GET_CHATROOMS_FOR_USER, {
+    variables: {
+      userId: userId,
+    },
+  });
+  const isSmallDevice = useMediaQuery("(max-width: 768px)");
   const defaultTextStyles: React.CSSProperties = {
     textOverflow: isSmallDevice ? "unset" : "ellipsis",
     whiteSpace: isSmallDevice ? "unset" : "nowrap",
     overflow: isSmallDevice ? "unset" : "hidden",
-  }
+  };
 
   const defaultFlexStyles: React.CSSProperties = {
     maxWidth: isSmallDevice ? "unset" : "200px",
-  }
+  };
 
   const [activeRoomId, setActiveRoomId] = React.useState<number | null>(
     parseInt(useParams<{ id: string }>().id || "0")
-  )
-  const navigate = useNavigate()
+  );
+  const navigate = useNavigate();
 
   const [deleteChatroom] = useMutation(DELETE_CHATROOM, {
     variables: {
@@ -62,10 +59,10 @@ function RoomList() {
       },
     ],
     onCompleted: () => {
-      navigate("/")
+      navigate("/");
     },
-  })
-  const isMediumDevice = useMediaQuery("(max-width: 992px)")
+  });
+  const isMediumDevice = useMediaQuery("(max-width: 992px)");
   return (
     <Flex direction={"row"} h={"100vh"} ml={"100px"}>
       <Card shadow="md" p={0}>
@@ -157,8 +154,8 @@ function RoomList() {
                             variant="light"
                             color="red"
                             onClick={(e) => {
-                              e.preventDefault()
-                              deleteChatroom()
+                              e.preventDefault();
+                              deleteChatroom();
                             }}
                           >
                             <IconX />
@@ -174,7 +171,7 @@ function RoomList() {
         </Flex>
       </Card>
     </Flex>
-  )
+  );
 }
 
-export default RoomList
+export default RoomList;

@@ -1,9 +1,9 @@
-import React, { useState } from "react"
-import { useGeneralStore } from "../stores/generalStore"
-import { useUserStore } from "../stores/userStore"
-import { useForm } from "@mantine/form"
-import { useMutation } from "@apollo/client"
-import { UPDATE_PROFILE } from "../graphql/mutations/UpdateUserProfile"
+import React, { useState } from "react";
+import { useGeneralStore } from "../stores/generalStore";
+import { useUserStore } from "../stores/userStore";
+import { useForm } from "@mantine/form";
+import { useMutation } from "@apollo/client";
+import { UPDATE_PROFILE } from "../graphql/mutations/UpdateUserProfile";
 import {
   Avatar,
   Button,
@@ -12,24 +12,24 @@ import {
   Group,
   Modal,
   TextInput,
-} from "@mantine/core"
-import { IconEditCircle } from "@tabler/icons-react"
+} from "@mantine/core";
+import { IconEditCircle } from "@tabler/icons-react";
 
 function ProfileSettings() {
   const isProfileSettingsModalOpen = useGeneralStore(
     (state) => state.isProfileSettingsModalOpen
-  )
+  );
   const toggleProfileSettingsModal = useGeneralStore(
     (state) => state.toggleProfileSettingsModal
-  )
-  const profileImage = useUserStore((state) => state.avatarUrl)
-  const updateProfileImage = useUserStore((state) => state.updateProfileImage)
-  const fullname = useUserStore((state) => state.fullname)
-  const updateUsername = useUserStore((state) => state.updateUsername)
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const imagePreview = imageFile ? URL.createObjectURL(imageFile) : null
+  );
+  const profileImage = useUserStore((state) => state.avatarUrl);
+  const updateProfileImage = useUserStore((state) => state.updateProfileImage);
+  const fullname = useUserStore((state) => state.fullname);
+  const updateUsername = useUserStore((state) => state.updateUsername);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const imagePreview = imageFile ? URL.createObjectURL(imageFile) : null;
 
-  const fileInputRef = React.useRef<HTMLButtonElement>(null)
+  const fileInputRef = React.useRef<HTMLButtonElement>(null);
 
   const form = useForm({
     initialValues: {
@@ -42,7 +42,7 @@ function ProfileSettings() {
           ? null
           : "Username must be at least 3 characters",
     },
-  })
+  });
 
   const [updateProfile] = useMutation(UPDATE_PROFILE, {
     variables: {
@@ -51,16 +51,16 @@ function ProfileSettings() {
     },
 
     onCompleted: (data) => {
-      updateProfileImage(data.updateProfile.avatarUrl)
-      updateUsername(data.updateProfile.fullname)
+      updateProfileImage(data.updateProfile.avatarUrl);
+      updateUsername(data.updateProfile.fullname);
     },
-  })
+  });
   const handleSave = async () => {
-    if (form.validate().hasErrors) return
+    if (form.validate().hasErrors) return;
     await updateProfile().then(() => {
-      toggleProfileSettingsModal()
-    })
-  }
+      toggleProfileSettingsModal();
+    });
+  };
   return (
     <Modal
       opened={isProfileSettingsModalOpen}
@@ -109,7 +109,7 @@ function ProfileSettings() {
           label="Username"
           {...form.getInputProps("fullname")}
           onChange={(event) => {
-            form.setFieldValue("fullname", event.currentTarget.value)
+            form.setFieldValue("fullname", event.currentTarget.value);
           }}
           error={form.errors.fullname}
         />
@@ -121,7 +121,7 @@ function ProfileSettings() {
         </Flex>
       </form>
     </Modal>
-  )
+  );
 }
 
-export default ProfileSettings
+export default ProfileSettings;
