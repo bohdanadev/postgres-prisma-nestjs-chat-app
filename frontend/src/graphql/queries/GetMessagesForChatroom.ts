@@ -1,24 +1,27 @@
 import { gql } from "@apollo/client"
 
-export const GET_CHATROOMS_FOR_USER = gql`
-  query GetChatroomsForUser($userId: Float!) {
-    getChatroomsForUser(userId: $userId) {
+export const GET_MESSAGES_FOR_CHATROOM = gql`
+  query GetMessagesForChatroom($chatroomId: Float!) {
+    getMessagesForChatroom(chatroomId: $chatroomId) {
       id
-      name
-      messages {
-        id
-        content
-        createdAt
-        user {
-          id
-          fullname
-        }
-      }
-      users {
-        avatarUrl
+      content
+      imageUrl
+      createdAt
+      user {
         id
         fullname
         email
+        avatarUrl
+      }
+      chatroom {
+        id
+        name
+        users {
+          id
+          fullname
+          email
+          avatarUrl
+        }
       }
     }
   }

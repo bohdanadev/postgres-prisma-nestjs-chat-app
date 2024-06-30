@@ -6,6 +6,7 @@ import ProtectedRoutes from "../components/ProtectedRoutes"
 import { Flex } from "@mantine/core"
 import RoomList from "../components/RoomList"
 import AddChatroom from "../components/AddChatroom"
+import JoinRoomOrChatwindow from "../components/JoinRoomOrChatWindow"
 
 function Home() {
 
@@ -23,6 +24,7 @@ function Home() {
           <AddChatroom />
           <Flex direction={{ base: "column", md: "row" }}>
             <RoomList />
+            <JoinRoomOrChatwindow />
           </Flex>
         </ProtectedRoutes>
       </div>

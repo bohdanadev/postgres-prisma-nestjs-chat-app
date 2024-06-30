@@ -14,8 +14,14 @@ const theme = createTheme({});
 const router = createBrowserRouter(
   [
     {
-      path: '/', element: <Home />
+      path: '/', element: <Home />,
+      children: [
+        {
+          path: "/chatrooms/:id",
+        },
+      ],
     }
+    
   ]
 )
 
