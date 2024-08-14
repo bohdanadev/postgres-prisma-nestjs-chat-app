@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 import { verify } from 'jsonwebtoken';
+import { Config, JWTConfig } from 'src/config/config.type';
 
 @Injectable()
 export class TokenService {
-  constructor(private configService: ConfigService) {}
+  private readonly jwtConfig: JWTConfig;
+  constructor(private readonly configService: ConfigService<Config>) {
+    this.jwtConfig = configService.get<JWTConfig>('jwt');
+  }
 
   extractToken(connectionParams: any): string | null {
     return connectionParams?.token || null;
   }
 
   validateToken(token: string): any {
-    const refreshTokenSecret = this.configService.get<string>(
-      'REFRESH_TOKEN_SECRET',
-    );
+    const refreshTokenSecret = this.jwtConfig.refreshSecret;
     try {
       return verify(token, refreshTokenSecret);
     } catch (error) {

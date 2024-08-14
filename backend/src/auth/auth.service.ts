@@ -4,21 +4,27 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 import { Request, Response } from 'express';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 import { LoginDto, RegisterDto } from './dto';
 import { PrismaService } from '../prisma.service';
+import { AppConfig, Config, JWTConfig } from 'src/config/config.type';
 
 @Injectable()
 export class AuthService {
+  private readonly jwtConfig: JWTConfig;
+  private readonly appConfig: AppConfig;
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
-  ) {}
+    private readonly configService: ConfigService<Config>,
+  ) {
+    this.jwtConfig = configService.get<JWTConfig>('jwt');
+    this.appConfig = configService.get<AppConfig>('app');
+  }
 
   async refreshToken(req: Request, res: Response) {
     const refreshToken = req.cookies['refresh_token'];
@@ -30,7 +36,7 @@ export class AuthService {
 
     try {
       payload = this.jwtService.verify(refreshToken, {
-        secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+        secret: this.jwtConfig.refreshSecret,
       });
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired refresh token');
@@ -46,8 +52,8 @@ export class AuthService {
     const accessToken = this.jwtService.sign(
       { ...payload },
       {
-        secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
-        expiresIn: this.configService.get<number>('ACCESS_EXPIRES_IN'),
+        secret: this.jwtConfig.accessSecret,
+        expiresIn: this.jwtConfig.accessExpiresIn,
       },
     );
     res.cookie('access_token', accessToken, { httpOnly: true });
@@ -60,13 +66,13 @@ export class AuthService {
     const accessToken = this.jwtService.sign(
       { ...payload },
       {
-        secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
-        expiresIn: this.configService.get<number>('ACCESS_EXPIRES_IN'),
+        secret: this.jwtConfig.accessSecret,
+        expiresIn: this.jwtConfig.accessExpiresIn,
       },
     );
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
-      expiresIn: this.configService.get<number>('REFRESH_EXPIRES_IN'),
+      secret: this.jwtConfig.refreshSecret,
+      expiresIn: this.jwtConfig.refreshExpiresIn,
     });
 
     response.cookie('access_token', accessToken, { httpOnly: true });
@@ -92,7 +98,7 @@ export class AuthService {
     if (existingUser) {
       throw new BadRequestException({ email: 'Email already in use' });
     }
-    const saltOrRounds = this.configService.get<string>('SALT_OR_ROUNDS');
+    const saltOrRounds = this.appConfig.hashRounds;
     const hashedPassword = await bcrypt.hash(
       registerDto.password,
       +saltOrRounds,

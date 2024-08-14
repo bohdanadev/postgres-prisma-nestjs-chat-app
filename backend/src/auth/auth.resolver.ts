@@ -6,7 +6,6 @@ import { BadRequestException, UseFilters } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GraphQLErrorFilter } from '../filters/custom-exception.filter';
 
-
 @UseFilters(GraphQLErrorFilter)
 @Resolver()
 export class AuthResolver {
@@ -45,10 +44,6 @@ export class AuthResolver {
   }
   @Mutation(() => String)
   async refreshToken(@Context() context: { req: Request; res: Response }) {
-    try {
-      return this.authService.refreshToken(context.req, context.res);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return this.authService.refreshToken(context.req, context.res);
   }
 }

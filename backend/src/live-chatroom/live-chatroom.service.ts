@@ -1,16 +1,21 @@
+import { ConfigService } from '@nestjs/config/dist/config.service';
 import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { User } from '../user/user.type';
+import { Config, RedisConfig } from 'src/config/config.type';
 
 @Injectable()
 export class LiveChatroomService {
   private redisClient: Redis;
+  private readonly redisConfig: RedisConfig;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService<Config>) {
+    this.redisConfig = configService.get<RedisConfig>('redis');
+
     this.redisClient = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379', 10),
-      password: process.env.REDIS_PASSWORD,
+      host: this.redisConfig.host,
+      port: this.redisConfig.port,
+      password: this.redisConfig.password,
     });
   }
 

@@ -1,14 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 import { createWriteStream } from 'fs';
+import { AppConfig, Config } from 'src/config/config.type';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class ChatroomService {
+  private readonly appConfig: AppConfig;
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
-  ) {}
+    private readonly configService: ConfigService<Config>,
+  ) {
+    this.appConfig = configService.get<AppConfig>('app');
+  }
 
   async getChatroom(id: string) {
     return this.prisma.chatroom.findUnique({
@@ -123,7 +127,7 @@ export class ChatroomService {
     }
 
     const imageName = `${Date.now()}-${image.filename}`;
-    const imagePath = `${this.configService.get('IMAGE_PATH')}/${imageName}`;
+    const imagePath = `${this.appConfig.imagePath}/${imageName}`;
     const stream = image.createReadStream();
     const outputPath = `public${imagePath}`;
     const writeStream = createWriteStream(outputPath);

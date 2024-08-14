@@ -2,14 +2,19 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 
 import { AppModule } from './app.module';
+import { AppConfig } from './config/config.type';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const configService = app.get(ConfigService);
+  const appConfig = configService.get<AppConfig>('app');
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: appConfig.frontend,
     credentials: true,
     allowedHeaders: [
       'Accept',
@@ -21,7 +26,12 @@ async function bootstrap() {
     methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
   });
   app.use(cookieParser());
-  app.use(graphqlUploadExpress({ maxFileSize: process.env.MAX_FILE_SIZE, maxFiles: process.env.MAX_FILES }));
+  app.use(
+    graphqlUploadExpress({
+      maxFileSize: appConfig.maxFileSize,
+      maxFiles: appConfig.maxFiles,
+    }),
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -41,10 +51,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(parseInt(process.env.APP_PORT), process.env.APP_HOST, () => {
-    console.log(
-      `Server running on http://${process.env.APP_HOST}:${process.env.APP_PORT}`,
-    );
+  await app.listen(appConfig.port, appConfig.host, () => {
+    console.log(`Server running on http://${appConfig.host}:${appConfig.port}`);
   });
 }
 void bootstrap();

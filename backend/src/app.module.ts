@@ -10,6 +10,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+import configuration from './config/config';
 import { UserModule } from './user/user.module';
 import { TokenService } from './token/token.service';
 import { ChatroomModule } from './chatroom/chatroom.module';
@@ -26,10 +27,10 @@ const pubSub = new RedisPubSub({
   },
 });
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
+      load: [configuration],
       isGlobal: true,
     }),
     ServeStaticModule.forRoot({
@@ -44,7 +45,7 @@ const pubSub = new RedisPubSub({
       driver: ApolloDriver,
       useFactory: async (
         configService: ConfigService,
-        tokenService: TokenService
+        tokenService: TokenService,
       ) => {
         return {
           installSubscriptionHandlers: true,
